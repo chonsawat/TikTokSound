@@ -7,7 +7,7 @@
     "withGlobalTauri": false
   },
   "package": {
-    "productName": "tiktok-sound",
+    "productName": "TikTok Sound",
     "version": "0.0.0"
   },
   "tauri": {
@@ -32,10 +32,11 @@
       "targets": "all",
       "identifier": "localhost",
       "icon": [
+        "icons/icon.ico",
+        "icons/icon.icns",
         "icons/32x32.png",
         "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.ico"
+        "icons/128x128@2x.png"
       ]
     },
     "security": {

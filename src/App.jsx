@@ -3,36 +3,26 @@ import reactLogo from "./assets/react.svg";
 import { invoke } from "@tauri-apps/api/tauri";
 import "./App.css";
 
+import FormInput from "./components/form-input";
+import SoundTable from "./components/tables/sound-table";
+import LikeTable from "./components/tables/like-table";
+
 function App() {
-  const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
-
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-    setGreetMsg(await invoke("greet", { name }));
-  }
-
   return (
     <div className="container">
-      <h1>TikTok Sound!</h1>
+      <h1>TikTok Sound</h1>
       <p>Play sound rely on event such as Gift, Like, Subcribe.</p>
+      <FormInput />
 
-      <form
-        className="row"
-        onSubmit={(e) => {
-          e.preventDefault();
-          greet();
-        }}
-      >
-        <input
-          id="greet-input"
-          onChange={(e) => setName(e.currentTarget.value)}
-          placeholder="Enter a Tiktok ID..."
-        />
-        <button type="submit">Connect</button>
-      </form>
+      <div>
+        <h4>Event</h4>
+        <SoundTable />
+      </div>
 
-      <p>{greetMsg}</p>
+      <div style={{ "margin-top": "5rem" }}>
+        <h4>Like Event</h4>
+        <LikeTable />
+      </div>
     </div>
   );
 }

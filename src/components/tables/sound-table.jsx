@@ -35,7 +35,6 @@ const SoundTable = () => {
       { id: 1, enable: true, event: "following", sound: null },
       { id: 2, enable: false, event: "anygift", sound: null },
       { id: 3, enable: false, event: "rose", sound: null },
-      { id: 4, enable: true, event: "heart", sound: null },
     ]);
   }, []);
 
@@ -58,12 +57,11 @@ const SoundTable = () => {
           variant={actionButton.variant}
           onClick={addHandler}
           onMouseOver={(event) => {
-            if (event.type === "mouseover")
-            console.log("mouse over", event);
-              setActionButton({
-                content: "Create new event",
-                variant: "outline",
-              });
+            if (event.type === "mouseover") console.log("mouse over", event);
+            setActionButton({
+              content: "Create new event",
+              variant: "outline",
+            });
           }}
           onMouseLeave={(event) => {
             console.log(event);
@@ -105,6 +103,7 @@ const SoundTable = () => {
       </td>
       <td>
         <Select
+          searchable
           label=""
           placeholder="Pick one of these event"
           data={eventList}
@@ -138,7 +137,11 @@ const SoundTable = () => {
         <thead>{ths}</thead>
         <tbody>{rows}</tbody>
       </Table>
-      {eventRecords.length === 0 && <p style={{"display": "flex", "justify-content": "center"}}>Not found any events, please add some first.</p>}
+      {eventRecords.length === 0 && (
+        <p style={{ display: "flex", "justify-content": "center" }}>
+          Not found any events, please add some first.
+        </p>
+      )}
       {/* <AudioPlay/> */}
       {/* <AudioPlayer /> */}
     </div>

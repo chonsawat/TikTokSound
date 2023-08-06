@@ -35,7 +35,6 @@
         "icons/32x32.png",
         "icons/128x128.png",
         "icons/128x128@2x.png",
-        "icons/icon.icns",
         "icons/icon.ico"
       ]
     },
@@ -47,7 +46,7 @@
         "fullscreen": false,
         "resizable": true,
         "title": "TikTok Sound",
-        "width": 800,
+        "width":  980,
         "height": 600
       }
     ]

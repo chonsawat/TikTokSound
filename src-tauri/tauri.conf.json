@@ -16,6 +16,15 @@
       "shell": {
         "all": false,
         "open": true
+      },
+      "http": {
+        "all": true,
+        "request": true,
+        "scope": ["https://**/*"]
+      },
+      "fs": {
+        "all": true,
+        "scope": ["$APP/*", "$APP"]
       }
     },
     "bundle": {

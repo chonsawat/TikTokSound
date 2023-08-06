@@ -1,5 +1,3 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
 import { invoke } from "@tauri-apps/api/tauri";
 import "./App.css";
 
@@ -19,10 +17,10 @@ function App() {
         <SoundTable />
       </div>
 
-      <div style={{ "margin-top": "5rem" }}>
+      {/* <div style={{ "margin-top": "5rem" }}>
         <h4>Like Event</h4>
         <LikeTable />
-      </div>
+      </div> */}
     </div>
   );
 }

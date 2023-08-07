@@ -21,6 +21,7 @@
     "cross-env": "^7.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "tauri-plugin-sql-api": "https://github.com/tauri-apps/tauri-plugin-sql#v1",
     "tauri-plugin-store-api": "https://github.com/tauri-apps/tauri-plugin-store#v1"
   },
   "devDependencies": {

@@ -24,13 +24,20 @@
       },
       "fs": {
         "all": true,
-        "scope": ["$APP/*", "$APP"]
+        "scope": ["**"]
+      },
+      "path": {
+        "all": true
+      },
+      "protocol": {
+        "all": true,
+        "assetScope": ["**"]
       }
     },
     "bundle": {
       "active": true,
       "targets": "all",
-      "identifier": "localhost",
+      "identifier": "TikTokSound",
       "icon": [
         "icons/icon.ico",
         "icons/icon.icns",

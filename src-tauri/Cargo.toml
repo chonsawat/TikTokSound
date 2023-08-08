@@ -1,10 +1,10 @@
 [package]
 name = "tiktok-sound"
 version = "0.0.0"
-description = "A Tauri App"
-authors = ["you"]
+description = "A TikTok Sound App"
+authors = ["Chonsawat Nakanam"]
 license = ""
-repository = ""
+repository = "https://github.com/chonsawat/TikTokSound"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -13,14 +13,10 @@ edition = "2021"
 tauri-build = { version = "1.4", features = [] }
 
 [dependencies]
-tauri = { version = "1.4", features = [ "fs-all", "http-all", "shell-open"] }
+tauri = { version = "1.4", features = [ "protocol-all", "path-all", "fs-all", "http-all", "shell-open"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-
-[dependencies.tauri-plugin-sql]
-git = "https://github.com/tauri-apps/plugins-workspace"
-branch = "v1"
-features = ["postgres"] # or "postgres", or "mysql"
+tauri-plugin-store = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem

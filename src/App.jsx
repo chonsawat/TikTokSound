@@ -22,7 +22,8 @@ function App() {
     text: "Save",
   });
 
-  // console.log("rendering APP");
+  // TODO: Delete when production
+  console.log("rendering APP");
 
   return (
     <div className="container">

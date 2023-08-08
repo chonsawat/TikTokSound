@@ -19,16 +19,23 @@ import { join } from "@tauri-apps/api/path";
 import { convertFileSrc } from "@tauri-apps/api/tauri";
 import { event } from "@tauri-apps/api";
 
+import { useStore } from "../../stores/store.store";
+import { shallow } from "zustand/shallow";
+
 const SoundTable = () => {
   const [audioRefs, setAudioRefs] = useState([]);
-  const [eventRecords, setEventRecords] = useState([]);
+  // const [eventRecords, setEventRecords] = useState([]);
   const [actionButton, setActionButton] = useState({
     content: "Action",
     variant: "filled",
   });
 
-  const [playButton, setPlayButton] = useState("Play");
   const [path, setPath] = useState("./");
+
+  const eventRecords = useStore((state) => state.eventRecords, shallow);
+  const setEventRecords = useStore((state) => state.setEventRecords);
+
+  console.log("eventRecords:", eventRecords);
 
   const eventList = [
     { label: "Following", value: "following" },
@@ -87,7 +94,7 @@ const SoundTable = () => {
   }, [eventRecords]);
 
   const getAudioRefByRefId = (requiredRefId) => {
-    const result = audioRefs.find(({ refId }) => refId === requiredRefId)
+    const result = audioRefs.find(({ refId }) => refId === requiredRefId);
     // console.log(requiredRefId, result);
     return result;
   };
@@ -111,38 +118,37 @@ const SoundTable = () => {
     setAudioRefs(newAudioRefs);
   };
 
-  const pressPlayHandler = (iter) => {
+  const pressPlayHandler = (refId) => {
+    /* Handle while play and pause button was pressed */
     // const audioEvent = audioRefs[iter].current.audioEl.current;
-    const element = getAudioRefByRefId(iter)
+    const element = getAudioRefByRefId(refId);
     const audioEvent = element.current.audioEl.current;
     const state = element.isPlaying;
-    console.log(audioEvent);
-    audioEvent.play();
-    console.log(state);
+
     if (!state) {
-      console.log("Playing", state);
+      // Play a audio and loop until pause button was clicked.
       audioEvent.play();
       audioEvent.loop = true;
-      const newAudioRefs = [...audioRefs];
-      newAudioRefs.map((item => {
-        if (item.refId === iter) item.isPlaying = true;
-        return item;
-      }))
-      setAudioRefs(newAudioRefs);
-      console.log(newAudioRefs[iter]);
 
-      console.log(audioEvent.ended);
+      // update newAudioRefs state
+      const newAudioRefs = [...audioRefs];
+      newAudioRefs.map((item) => {
+        if (item.refId === refId) item.isPlaying = true;
+        return item;
+      });
+      setAudioRefs(newAudioRefs);
     } else {
-      console.log("Pause", state);
+      // Stop sound playback
       audioEvent.pause();
       audioEvent.load();
+
+      // update newAudioRefs state
       const newAudioRefs = [...audioRefs];
-      newAudioRefs.map((item => {
-        if (item.refId === iter) item.isPlaying = false;
+      newAudioRefs.map((item) => {
+        if (item.refId === refId) item.isPlaying = false;
         return item;
-      }))
+      });
       setAudioRefs(newAudioRefs);
-      console.log(newAudioRefs[iter]);
     }
   };
 
@@ -180,8 +186,9 @@ const SoundTable = () => {
     let audioState;
     let auidoVolume;
     let refId = element.id;
+    let soundPath = element.sound;
 
-    console.log("refId:", refId);
+    console.log(soundPath);
 
     try {
       audioState = getAudioRefByRefId(refId).isPlaying;
@@ -192,17 +199,17 @@ const SoundTable = () => {
           audioState = false;
         case "Cannot read properties of undefined (reading 'volume')":
           auidoVolume = 0.1;
+          break;
         default:
           console.log(e.message);
       }
     }
 
-    // console.log("rendering sound-table");
-    // console.log("eventRecords:", eventRecords);
-    // console.log("audioRefs:", audioRefs);
+    // TODO: Delete when production
+    console.log("rendering sound-table");
 
     return (
-      <tr key={element.id}>
+      <tr key={refId}>
         <td>
           <div>
             <Button
@@ -253,6 +260,7 @@ const SoundTable = () => {
             label=""
             placeholder="Pick one of these event"
             data={eventList}
+            // value={eventList[1]}
           />
         </td>
         <td>

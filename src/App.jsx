@@ -23,7 +23,7 @@ function App() {
   });
 
   // TODO: Delete when production
-  console.log("rendering APP");
+  // console.log("rendering APP");
 
   return (
     <div className="container">

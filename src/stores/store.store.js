@@ -3,23 +3,50 @@ import { create } from "zustand";
 export const useStore = create((set) => ({
   eventRecords: [
     {
-      id: 1,
+      id: "1",
       enable: true,
       event: "following",
+      volume: 0.2,
       sound:
         "C:\\Users\\Acer\\Documents\\TikTokSoundTemp\\assets\\sound\\fart.wav",
     },
     {
-      id: 2,
+      id: "2",
       enable: false,
       event: "anygift",
+      volume: 0.5,
       sound:
         "C:\\Users\\Acer\\Documents\\TikTokSoundTemp\\assets\\sound\\fart01.wav",
     },
     {
-      id: 3,
+      id: "3",
+      enable: true,
+      event: "rose",
+      volume: 0.1,
+      sound:
+        "C:\\Users\\Acer\\Documents\\TikTokSoundTemp\\assets\\sound\\monkey-laugh-102.wav",
+    },
+    {
+      id: "4",
+      enable: true,
+      event: "following",
+      volume: 0.7,
+      sound:
+        "C:\\Users\\Acer\\Documents\\TikTokSoundTemp\\assets\\sound\\fart.wav",
+    },
+    {
+      id: "5",
+      enable: true,
+      event: "anygift",
+      volume: 0.5,
+      sound:
+        "C:\\Users\\Acer\\Documents\\TikTokSoundTemp\\assets\\sound\\fart01.wav",
+    },
+    {
+      id: "6",
       enable: false,
       event: "rose",
+      volume: 1,
       sound:
         "C:\\Users\\Acer\\Documents\\TikTokSoundTemp\\assets\\sound\\monkey-laugh-102.wav",
     },

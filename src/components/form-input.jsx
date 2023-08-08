@@ -15,7 +15,7 @@ const FormInput = ({openModal}) => {
   });
 
   // TODO: Delete when production
-  console.log("rendering form");
+  // console.log("rendering form");
 
   return (
     <>

@@ -2,6 +2,7 @@ import { Button, Table } from "@mantine/core";
 import { Checkbox } from "@mantine/core";
 import { FileInput } from "@mantine/core";
 import { Select } from "@mantine/core";
+
 import { useEffect, useState, useRef, createRef } from "react";
 
 import { randomId } from "@mantine/hooks";
@@ -9,6 +10,7 @@ import { randomId } from "@mantine/hooks";
 import PlayIcon from "../../assets/icon/play.svg";
 import EditIcon from "../../assets/icon/edit.svg";
 import DeleteIcon from "../../assets/icon/trash-2.svg";
+import MuteIcon from "../../assets/icon/volume-x.svg";
 import AudioPlayer from "../audio/audio";
 import ReactAudioPlayer from "react-audio-player";
 
@@ -72,13 +74,23 @@ const SoundTable = () => {
       Array(eventRecords.length)
         .fill()
         .map((_, iter) => {
-          let obj = audioRefs[iter] || {...createRef(), isPlaying: false};
+          let obj = audioRefs[iter] || {
+            ...createRef(),
+            isPlaying: false,
+            volume: 0.1,
+            refId: eventRecords[iter].id,
+          };
           // console.log(obj);
           return obj;
         })
     );
-    console.log(audioRefs);
   }, [eventRecords]);
+
+  const getAudioRefByRefId = (requiredRefId) => {
+    const result = audioRefs.find(({ refId }) => refId === requiredRefId)
+    // console.log(requiredRefId, result);
+    return result;
+  };
 
   const addHandler = () => {
     setEventRecords([
@@ -92,21 +104,45 @@ const SoundTable = () => {
     ]);
   };
 
-  const deleteHanler = (id) => {
+  const deleteHanler = (id, refId) => {
     const filterdItems = eventRecords.filter((item) => item.id != id);
+    const newAudioRefs = audioRefs.filter((item) => item.refId != refId);
     setEventRecords(filterdItems);
+    setAudioRefs(newAudioRefs);
   };
 
   const pressPlayHandler = (iter) => {
-    const audioEvent = audioRefs[iter].current.audioEl.current;
-    const state = audioEvent.seekable;
-    if (state === 4) {
+    // const audioEvent = audioRefs[iter].current.audioEl.current;
+    const element = getAudioRefByRefId(iter)
+    const audioEvent = element.current.audioEl.current;
+    const state = element.isPlaying;
+    console.log(audioEvent);
+    audioEvent.play();
+    console.log(state);
+    if (!state) {
+      console.log("Playing", state);
       audioEvent.play();
-      console.log(state);
+      audioEvent.loop = true;
+      const newAudioRefs = [...audioRefs];
+      newAudioRefs.map((item => {
+        if (item.refId === iter) item.isPlaying = true;
+        return item;
+      }))
+      setAudioRefs(newAudioRefs);
+      console.log(newAudioRefs[iter]);
+
+      console.log(audioEvent.ended);
     } else {
-      console.log("Working", state);
+      console.log("Pause", state);
       audioEvent.pause();
       audioEvent.load();
+      const newAudioRefs = [...audioRefs];
+      newAudioRefs.map((item => {
+        if (item.refId === iter) item.isPlaying = false;
+        return item;
+      }))
+      setAudioRefs(newAudioRefs);
+      console.log(newAudioRefs[iter]);
     }
   };
 
@@ -141,28 +177,71 @@ const SoundTable = () => {
   );
 
   const rows = eventRecords?.map((element, iter) => {
+    let audioState;
+    let auidoVolume;
+    let refId = element.id;
+
+    console.log("refId:", refId);
+
+    try {
+      audioState = getAudioRefByRefId(refId).isPlaying;
+      auidoVolume = getAudioRefByRefId(refId).volume;
+    } catch (e) {
+      switch (e.message) {
+        case "Cannot read properties of undefined (reading 'isPlaying')":
+          audioState = false;
+        case "Cannot read properties of undefined (reading 'volume')":
+          auidoVolume = 0.1;
+        default:
+          console.log(e.message);
+      }
+    }
+
+    // console.log("rendering sound-table");
+    // console.log("eventRecords:", eventRecords);
+    // console.log("audioRefs:", audioRefs);
+
     return (
       <tr key={element.id}>
         <td>
           <div>
-            <Button color="cyan" onClick={() => pressPlayHandler(iter)}>
-              Play
-              <img
-                src={PlayIcon}
-                width={"20px"}
-                alt=""
-                style={{ marginLeft: "0.5rem" }}
-              />
+            <Button
+              color={audioState ? "pink" : "lime"}
+              onClick={() => pressPlayHandler(refId)}
+            >
+              {audioState ? (
+                <>
+                  <p>Pause</p>
+                  <img
+                    src={MuteIcon}
+                    width={"20px"}
+                    alt=""
+                    style={{ marginLeft: "0.5rem" }}
+                  />
+                </>
+              ) : (
+                <>
+                  <p>Play</p>
+                  <img
+                    src={PlayIcon}
+                    width={"20px"}
+                    alt=""
+                    style={{ marginLeft: "0.5rem" }}
+                  />
+                </>
+              )}
             </Button>
             <ReactAudioPlayer
-              ref={audioRefs[iter]}
+              ref={getAudioRefByRefId(refId)}
               src={path}
-              volume={0.1}
+              volume={auidoVolume}
             ></ReactAudioPlayer>
-            <Button ml="sm" color="orange" onClick={() => {}}>
+            {/* TODO: Remove edit button */}
+            {/* <h3>{auidoVolume}</h3> */}
+            {/* <Button ml="sm" color="orange" onClick={() => {}}>
               Edit
               <img src={EditIcon} alt="" style={{ marginLeft: "0.5rem" }} />
-            </Button>
+            </Button> */}
           </div>
         </td>
         <td>
@@ -183,7 +262,7 @@ const SoundTable = () => {
           <Button
             color="red"
             onClick={() => {
-              deleteHanler(element.id);
+              deleteHanler(element.id, (refId = refId));
             }}
           >
             Delete
@@ -206,7 +285,6 @@ const SoundTable = () => {
         </p>
       )}
       {/* <h3>Path: {path}</h3> */}
-      <ReactAudioPlayer src={path} controls />
     </div>
   );
 };

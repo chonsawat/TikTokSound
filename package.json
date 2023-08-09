@@ -23,6 +23,7 @@
     "react": "^18.2.0",
     "react-audio-player": "^0.17.0",
     "react-dom": "^18.2.0",
+    "react-redux": "^8.1.2",
     "tauri-plugin-store-api": "https://github.com/tauri-apps/tauri-plugin-store#v1",
     "typescript": "^5.1.6",
     "zustand": "^4.4.1"

@@ -18,7 +18,7 @@ import { BaseDirectory, readDir } from "@tauri-apps/api/fs";
 import { join } from "@tauri-apps/api/path";
 import { convertFileSrc } from "@tauri-apps/api/tauri";
 
-import { useStore } from "../../stores/store.store";
+import { useEventRecordStore } from "../../stores/event-record.store";
 
 const SoundTable = () => {
   const [file, setFile] = useState(null);
@@ -31,8 +31,8 @@ const SoundTable = () => {
 
   const [path, setPath] = useState("./");
 
-  const eventRecords = useStore((state) => state.eventRecords);
-  const setEventRecords = useStore((state) => state.setEventRecords);
+  const eventRecords = useEventRecordStore((state) => state.eventRecords);
+  const setEventRecords = useEventRecordStore((state) => state.setEventRecords);
 
   // TODO: Delete when production
   // console.log("rendering sound-table");
@@ -53,13 +53,6 @@ const SoundTable = () => {
   useEffect(() => {
     const fetchData = async () => {
       /* TODO: Store persist data */
-      // const store = new Store("/TikTokSound/settings.dat");
-      // await store.set("some-key", { value: 5 });
-      // const val = await store.get("some-key");
-      // console.log(val);
-      // await store.save();
-      // console.log(val);
-      // setPath(appDataDirPath);
     };
 
     fetchData();
@@ -256,8 +249,6 @@ const SoundTable = () => {
               src={audioSoundPath}
               volume={audioVolume}
             ></ReactAudioPlayer>
-            {/* TODO: Remove edit button */}
-            {/* <h3>{auidoVolume}</h3> */}
           </div>
         </td>
         <td>

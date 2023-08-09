@@ -8,11 +8,11 @@ import LikeTable from "./components/tables/like-table";
 import { Modal, TextInput, Group, Button } from "@mantine/core";
 import { useDisclosure, randomId } from "@mantine/hooks";
 import { useForm } from "@mantine/form";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 function App() {
   const [opened, { open, close }] = useDisclosure(false);
-  const form = useForm({
+  const form = useForm< {port: number}>({
     initialValues: {
       port: 8082,
     },
@@ -39,7 +39,6 @@ function App() {
       </div>
       <div className="modal-input">
         <Modal
-          style={{ position: "0" }}
           opened={opened}
           onClose={() => {
             setSaveButton({ color: "primary", text: "Save" });
@@ -68,11 +67,6 @@ function App() {
                 mt={"1.5rem"}
                 variant="outline"
                 color={saveButton.color}
-                onClick={() =>
-                  form.setValues({
-                    tiktok_id: `@${randomId()}`,
-                  })
-                }
               >
                 {saveButton.text}
               </Button>

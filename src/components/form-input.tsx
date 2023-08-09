@@ -7,7 +7,7 @@ import { faSliders } from "@fortawesome/free-solid-svg-icons";
 
 import "../styles/form-input.module.css"
 
-const FormInput = ({openModal}) => {
+const FormInput: React.FC<{openModal: () => void}> = ({openModal}) => {
   const form = useForm({
     initialValues: {
       tiktok_id: "",

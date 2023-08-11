@@ -1,14 +1,11 @@
-import { invoke } from "@tauri-apps/api/tauri";
 import "./App.css";
 
-import FormInput from "./components/form-input";
-import SoundTable from "./components/tables/sound-table";
-import LikeTable from "./components/tables/like-table";
+import FormInput from "./components/Input/FormInput";
+import SoundTable from "./components/Table/SoundTable";
 
-import { Modal, TextInput, Group, Button } from "@mantine/core";
-import { useDisclosure, randomId } from "@mantine/hooks";
+import { useDisclosure } from "@mantine/hooks";
 import { useForm } from "@mantine/form";
-import { useRef, useState } from "react";
+import ModalPopup from "./components/Input/ModalPopup";
 
 function App() {
   const [opened, { open, close }] = useDisclosure(false);
@@ -17,13 +14,9 @@ function App() {
       port: 8082,
     },
   });
-  const [saveButton, setSaveButton] = useState({
-    color: "primary",
-    text: "Save",
-  });
 
   // TODO: Delete when production
-  // console.log("rendering APP");
+  console.log("rendering APP");
 
   return (
     <div className="container">
@@ -38,46 +31,8 @@ function App() {
         </div>
       </div>
       <div className="modal-input">
-        <Modal
-          opened={opened}
-          onClose={() => {
-            setSaveButton({ color: "primary", text: "Save" });
-            return close();
-          }}
-          title="Authentication"
-          xOffset={0}
-          yOffset={"20vh"}
-          target="div.modal-input"
-          centered
-        >
-          <Group maw={200}>
-            <form
-              onSubmit={form.onSubmit((values) => {
-                console.log("Sent Form Doing Somthing!");
-                setSaveButton({ color: "lime", text: "Saved" });
-              })}
-            >
-              <TextInput
-                label="Port"
-                placeholder="Default 8082"
-                {...form.getInputProps("port")}
-              />
-              <Button
-                type="submit"
-                mt={"1.5rem"}
-                variant="outline"
-                color={saveButton.color}
-              >
-                {saveButton.text}
-              </Button>
-            </form>
-          </Group>
-        </Modal>
+        <ModalPopup closed={closed} opened={opened} form={form}/>
       </div>
-      {/* <div style={{ "margin-top": "5rem" }}>
-        <h4>Like Event</h4>
-        <LikeTable />
-      </div> */}
     </div>
   );
 }

@@ -68,3 +68,4 @@ export const useEventRecordStore = create((set) => ({
       eventRecords: state.eventRecords.filter((item) => item.refId !== refId),
     })),
 }));
+

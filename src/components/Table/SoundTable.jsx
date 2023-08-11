@@ -5,84 +5,63 @@ import { Select } from "@mantine/core";
 
 import { useEffect, useState, useRef, createRef } from "react";
 
-import { randomId } from "@mantine/hooks";
-
-import PlayIcon from "../../assets/icon/play.svg";
 import EditIcon from "../../assets/icon/edit.svg";
 import DeleteIcon from "../../assets/icon/trash-2.svg";
-import MuteIcon from "../../assets/icon/volume-x.svg";
-import AudioPlayer from "../audio/audio";
+
+import AudioPlayer from "../Audio/audio";
 import ReactAudioPlayer from "react-audio-player";
 
 import { BaseDirectory, readDir } from "@tauri-apps/api/fs";
 import { join } from "@tauri-apps/api/path";
 import { convertFileSrc } from "@tauri-apps/api/tauri";
 
-import { useEventRecordStore } from "../../stores/event-record.store";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  eventRecordsSelector,
+  setEventRecords,
+  deleteEventRecordsById,
+} from "../../stores/event-record";
+
+import {
+  createDefualtValue,
+  createNewAudioPlayerRow,
+  eventList,
+  getAudioRefByRefId,
+} from "../../utils/SoundTable";
+
+import ActionButton from "../Button/ActionButton";
+import AudioButton from "../Button/AudioButton";
 
 const SoundTable = () => {
+  const dispatch = useDispatch();
   const [file, setFile] = useState(null);
   const [audioRefs, setAudioRefs] = useState([]);
   const [audioSoundPaths, setAudioSoundPaths] = useState({});
-  const [actionButton, setActionButton] = useState({
-    content: "Action",
-    variant: "filled",
-  });
-
   const [path, setPath] = useState("./");
 
-  const eventRecords = useEventRecordStore((state) => state.eventRecords);
-  const setEventRecords = useEventRecordStore((state) => state.setEventRecords);
+  const eventRecords = useSelector(eventRecordsSelector);
 
-  // TODO: Delete when production
+  // TODO: Delete log when production
   // console.log("rendering sound-table");
   // console.log("file upload:", file);
   console.log("eventRecords:", eventRecords);
   console.log("audioRefs:", audioRefs);
   console.log("audioSoundPaths:", audioSoundPaths);
 
-  const eventList = [
-    { label: "Following", value: "following" },
-    { label: "Subcribe", value: "subcribe" },
-    { label: "Any Gift", value: "anygift" },
-    { label: "TikTok", value: "tiktok" },
-    { label: "Rose", value: "rose" },
-    { label: "Heart", value: "heart" },
-  ];
-
-  useEffect(() => {
-    const fetchData = async () => {
-      /* TODO: Store persist data */
-    };
-
-    fetchData();
-  }, []);
+  // TODO: Store persist data
 
   // Create Refs to audio player object
   useEffect(() => {
-    setAudioRefs(
-      Array(eventRecords.length)
-        .fill()
-        .map((_, iter) => {
-          let obj = audioRefs[iter] || {
-            ...createRef(),
-            isPlaying: false,
-            volume: eventRecords[iter].volume || 0.3,
-            refId: eventRecords[iter].id,
-          };
-          // console.log(obj);
-          return obj;
-        })
-    );
+    setAudioRefs(createNewAudioPlayerRow(eventRecords, audioRefs));
   }, [eventRecords]);
 
   // Create audio wav path
+  // will be in redux thunk because containt side effect of asycn
   useEffect(() => {
     const updateStatePath = {};
 
     const readFileHandler = async (refId, filePath) => {
       try {
-
         const path = await join(filePath);
         const fileConvetedPath = await convertFileSrc(path);
         updateStatePath[refId] = fileConvetedPath;
@@ -98,35 +77,21 @@ const SoundTable = () => {
     });
   }, [eventRecords]);
 
-  const getAudioRefByRefId = (requiredRefId) => {
-    const result = audioRefs.find(({ refId }) => refId === requiredRefId);
-    // console.log(requiredRefId, result);
-    return result;
+  const onAddHandler = () => {
+    const defualtValue = createDefualtValue();
+    console.log(defualtValue);
+    dispatch(setEventRecords([...eventRecords, defualtValue]));
   };
 
-  const addHandler = () => {
-    setEventRecords([
-      ...eventRecords,
-      {
-        id: randomId(),
-        enable: true,
-        event: "heart",
-        sound: "C:\\Users\\Acer\\Documents\\TikTokSoundTemp\\assets\\sound\\begging-meow.wav" || "../assets/sound/begging-meow.wav",
-      },
-    ]);
-  };
-
-  const deleteHanler = (id, refId) => {
-    const filterdItems = eventRecords.filter((item) => item.id != id);
+  const onDeleteHanler = (id, refId) => {
     const newAudioRefs = audioRefs.filter((item) => item.refId != refId);
-    setEventRecords(filterdItems);
+    dispatch(deleteEventRecordsById(id));
     setAudioRefs(newAudioRefs);
   };
 
-  const pressPlayHandler = (refId) => {
+  const onPressPlayHandler = (refId) => {
     /* Handle while play and pause button was pressed */
-    // const audioEvent = audioRefs[iter].current.audioEl.current;
-    const element = getAudioRefByRefId(refId);
+    const element = getAudioRefByRefId(audioRefs, refId);
     const audioEvent = element.current.audioEl.current;
     const state = element.isPlaying;
 
@@ -160,25 +125,7 @@ const SoundTable = () => {
   const ths = (
     <tr>
       <th>
-        <Button
-          variant={actionButton.variant}
-          onClick={addHandler}
-          onMouseOver={(event) => {
-            // console.log("mouse over", event);
-            if (event.type === "mouseover")
-              setActionButton({
-                content: "Create new event",
-                variant: "outline",
-              });
-          }}
-          onMouseLeave={(event) => {
-            // console.log("mouse leave", event);
-            if (event.type === "mouseleave")
-              setActionButton({ content: "Action", variant: "filled" });
-          }}
-        >
-          {actionButton.content}
-        </Button>
+        <ActionButton onAddHandler={onAddHandler} />
       </th>
       <th>Volume</th>
       <th>Enable</th>
@@ -190,7 +137,7 @@ const SoundTable = () => {
 
   const rows = eventRecords?.map((element, iter) => {
     let refId = element.id;
-    let isEnable = element.enable
+    let isEnable = element.enable;
 
     let audioState;
     let audioVolume;
@@ -199,8 +146,8 @@ const SoundTable = () => {
     console.log("element: " + Object.keys(element));
 
     try {
-      audioState = getAudioRefByRefId(refId).isPlaying;
-      audioVolume = getAudioRefByRefId(refId).volume;
+      audioState = getAudioRefByRefId(audioRefs, refId).isPlaying;
+      audioVolume = getAudioRefByRefId(audioRefs, refId).volume;
       audioSoundPath = audioSoundPaths[refId];
     } catch (e) {
       switch (e.message) {
@@ -217,35 +164,10 @@ const SoundTable = () => {
     return (
       <tr key={refId}>
         <td>
-          <div>
-            <Button
-              color={audioState ? "pink" : "lime"}
-              onClick={() => pressPlayHandler(refId)}
-            >
-              {audioState ? (
-                <>
-                  <p>Pause</p>
-                  <img
-                    src={MuteIcon}
-                    width={"20px"}
-                    alt=""
-                    style={{ marginLeft: "0.5rem" }}
-                  />
-                </>
-              ) : (
-                <>
-                  <p>Play</p>
-                  <img
-                    src={PlayIcon}
-                    width={"20px"}
-                    alt=""
-                    style={{ marginLeft: "0.5rem" }}
-                  />
-                </>
-              )}
-            </Button>
+          <div id="AuidoButton">
+           <AudioButton onPress={() => onPressPlayHandler(refId)}/>
             <ReactAudioPlayer
-              ref={getAudioRefByRefId(refId)}
+              ref={getAudioRefByRefId(audioRefs, refId)}
               src={audioSoundPath}
               volume={audioVolume}
             ></ReactAudioPlayer>
@@ -270,7 +192,13 @@ const SoundTable = () => {
           />
         </td>
         <td>
-          <Checkbox defaultChecked={isEnable} value={isEnable} onChange={(event) => {isEnable = !(event.currentTarget.checked)}}/>
+          <Checkbox
+            defaultChecked={isEnable}
+            value={isEnable}
+            onChange={(event) => {
+              isEnable = !event.currentTarget.checked;
+            }}
+          />
         </td>
         <td>
           <Select
@@ -295,7 +223,7 @@ const SoundTable = () => {
           <Button
             color="red"
             onClick={() => {
-              deleteHanler(element.id, (refId = refId));
+              onDeleteHanler(element.id, (refId = refId));
             }}
           >
             Delete
@@ -306,13 +234,15 @@ const SoundTable = () => {
     );
   });
 
+  // TODO: Delete on production
+  console.log("============= Slice ================");
   return (
     <div>
       <Table highlightOnHover>
         <thead>{ths}</thead>
         <tbody>{rows}</tbody>
       </Table>
-      {eventRecords.length === 0 && (
+      {eventRecords?.length === 0 && (
         <p style={{ display: "flex", justifyContent: "center" }}>
           Not found any events, please add some first.
         </p>

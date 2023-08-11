@@ -5,8 +5,6 @@ import { useForm } from "@mantine/form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSliders } from "@fortawesome/free-solid-svg-icons";
 
-import "../styles/form-input.module.css"
-
 const FormInput: React.FC<{openModal: () => void}> = ({openModal}) => {
   const form = useForm({
     initialValues: {

@@ -1,14 +1,14 @@
 import PlayIcon from "../../assets/icon/play.svg";
 import MuteIcon from "../../assets/icon/volume-x.svg";
 
-import { Button, Table, Slider } from "@mantine/core";
+import { Button } from "@mantine/core";
 
 type AudioButtonProps = {
     audioState: boolean,
-    onPress: () => {}
+    onPress: () => void
 }
 
-const AudioButton = ({audioState, onPress}: AudioButtonProps) => {
+const AudioButton : React.FC<AudioButtonProps> = ({audioState, onPress}) => {
   return (
     <Button
     color={audioState ? "pink" : "lime"}
@@ -18,7 +18,7 @@ const AudioButton = ({audioState, onPress}: AudioButtonProps) => {
       <>
         <p>Pause</p>
         <img
-          src={"../../assets/icon/play.svg"}
+          src={PlayIcon}
           width={"20px"}
           alt=""
           style={{ marginLeft: "0.5rem" }}
@@ -28,7 +28,7 @@ const AudioButton = ({audioState, onPress}: AudioButtonProps) => {
       <>
         <p>Play</p>
         <img
-          src={"../../assets/icon/volume-x.svg"}
+          src={MuteIcon}
           width={"20px"}
           alt=""
           style={{ marginLeft: "0.5rem" }}

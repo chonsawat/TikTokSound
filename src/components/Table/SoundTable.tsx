@@ -15,7 +15,6 @@ import { BaseDirectory, readDir } from "@tauri-apps/api/fs";
 import { join } from "@tauri-apps/api/path";
 import { convertFileSrc } from "@tauri-apps/api/tauri";
 
-import { useDispatch, useSelector } from "react-redux";
 import {
   eventRecordsSelector,
   setEventRecords,
@@ -31,15 +30,21 @@ import {
 
 import ActionButton from "../Button/ActionButton";
 import AudioButton from "../Button/AudioButton";
+import { useAppDispatch, useAppSelector } from "../../stores/hook";
+import { audioRefSelector, setAudioRefs } from "../../stores/audio";
+import { EventRecordType } from "../../stores/event-record/event-record.reducer";
+
+type AudioRefType = {refId: string, isPlaying: boolean}
 
 const SoundTable = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const [file, setFile] = useState(null);
-  const [audioRefs, setAudioRefs] = useState([]);
+  // const [audioRefs, dispatch(setAudioRefs] =) useState([]);
   const [audioSoundPaths, setAudioSoundPaths] = useState({});
   const [path, setPath] = useState("./");
 
-  const eventRecords = useSelector(eventRecordsSelector);
+  const eventRecords = useAppSelector(eventRecordsSelector);
+  const audioRefs = useAppSelector(audioRefSelector);
 
   // TODO: Delete log when production
   // console.log("rendering sound-table");
@@ -52,15 +57,15 @@ const SoundTable = () => {
 
   // Create Refs to audio player object
   useEffect(() => {
-    setAudioRefs(createNewAudioPlayerRow(eventRecords, audioRefs));
+    dispatch(setAudioRefs(createNewAudioPlayerRow(eventRecords, audioRefs)));
   }, [eventRecords]);
 
   // Create audio wav path
   // will be in redux thunk because containt side effect of asycn
   useEffect(() => {
-    const updateStatePath = {};
+    const updateStatePath: any = {};
 
-    const readFileHandler = async (refId, filePath) => {
+    const readFileHandler = async (refId: string, filePath: string) => {
       try {
         const path = await join(filePath);
         const fileConvetedPath = await convertFileSrc(path);
@@ -72,7 +77,7 @@ const SoundTable = () => {
 
     setAudioSoundPaths(updateStatePath);
 
-    eventRecords.map(async (item) => {
+    eventRecords.map(async (item: EventRecordType) => {
       await readFileHandler(item.id, item.sound);
     });
   }, [eventRecords]);
@@ -83,13 +88,13 @@ const SoundTable = () => {
     dispatch(setEventRecords([...eventRecords, defualtValue]));
   };
 
-  const onDeleteHanler = (id, refId) => {
-    const newAudioRefs = audioRefs.filter((item) => item.refId != refId);
+  const onDeleteHanler = (id: string, refId: string) => {
+    const newAudioRefs = audioRefs.filter((item: any) => item.refId != refId);
     dispatch(deleteEventRecordsById(id));
-    setAudioRefs(newAudioRefs);
+    dispatch(setAudioRefs(newAudioRefs));
   };
 
-  const onPressPlayHandler = (refId) => {
+  const onPressPlayHandler = (refId: string) => {
     /* Handle while play and pause button was pressed */
     const element = getAudioRefByRefId(audioRefs, refId);
     const audioEvent = element.current.audioEl.current;
@@ -102,11 +107,11 @@ const SoundTable = () => {
 
       // update newAudioRefs state
       const newAudioRefs = [...audioRefs];
-      newAudioRefs.map((item) => {
+      newAudioRefs.map((item: AudioRefType) => {
         if (item.refId === refId) item.isPlaying = true;
         return item;
       });
-      setAudioRefs(newAudioRefs);
+      dispatch(setAudioRefs(newAudioRefs));
     } else {
       // Stop sound playback
       audioEvent.pause();
@@ -114,11 +119,11 @@ const SoundTable = () => {
 
       // update newAudioRefs state
       const newAudioRefs = [...audioRefs];
-      newAudioRefs.map((item) => {
+      newAudioRefs.map((item: AudioRefType) => {
         if (item.refId === refId) item.isPlaying = false;
         return item;
       });
-      setAudioRefs(newAudioRefs);
+      dispatch(setAudioRefs(newAudioRefs));
     }
   };
 
@@ -135,7 +140,7 @@ const SoundTable = () => {
     </tr>
   );
 
-  const rows = eventRecords?.map((element, iter) => {
+  const rows = eventRecords?.map((element: EventRecordType , iter) => {
     let refId = element.id;
     let isEnable = element.enable;
 
@@ -183,7 +188,7 @@ const SoundTable = () => {
                 if (item.refId === refId) item.volume = event / 100;
                 return item;
               });
-              setAudioRefs(newAudioRefs);
+              dispatch(setAudioRefs(newAudioRefs));
               return event;
             }}
             onChangeEnd={(event) => {
@@ -212,7 +217,6 @@ const SoundTable = () => {
         </td>
         <td>
           <FileInput
-            value={""}
             onChange={(event) => console.log("event:", event)}
             placeholder="Choose File"
             label=""

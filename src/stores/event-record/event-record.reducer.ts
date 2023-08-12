@@ -3,6 +3,14 @@
 */
 import { createSlice } from "@reduxjs/toolkit";
 
+export type EventRecordType = {
+  id: string,
+  enable: boolean,
+  volume: number,
+  sound: string,
+}
+export type EventRecordsType = EventRecordType[]
+
 export const EVENT_RECORD_INITIAL_STATE = {
   eventRecords: [
     {
@@ -60,20 +68,17 @@ export const eventRecordsSlice = createSlice({
   name: "eventRecords",
   initialState: EVENT_RECORD_INITIAL_STATE,
   reducers: {
-    setEventRecords: {
-      prepare: (x) => {
-        console.log("----- received ------", x);
-        return {payload: x}
-      },
-      reducer: (state, action) => {
-        state.eventRecords = action.payload;
-      },
+    setEventRecords: (state, action) => {
+      state.eventRecords = action.payload;
     },
     deleteEventRecordsById: (state, action) => {
-      state.eventRecords = state.eventRecords.filter((item) => item.id != action.payload)
-    }
+      state.eventRecords = state.eventRecords.filter(
+        (item) => item.id != action.payload
+      );
+    },
   },
 });
 
-export const { setEventRecords, deleteEventRecordsById } = eventRecordsSlice.actions;
+export const { setEventRecords, deleteEventRecordsById } =
+  eventRecordsSlice.actions;
 export const eventRecordsReducer = eventRecordsSlice.reducer;

@@ -1,7 +1,10 @@
+import { Button } from "@mantine/core";
+
+import { useAppDispatch, useAppSelector } from "../../stores/hook";
+import { audioButtonSelector } from "../../stores/audio";
+
 import PlayIcon from "../../assets/icon/play.svg";
 import MuteIcon from "../../assets/icon/volume-x.svg";
-
-import { Button } from "@mantine/core";
 
 type AudioButtonProps = {
     audioState: boolean,
@@ -9,6 +12,9 @@ type AudioButtonProps = {
 }
 
 const AudioButton : React.FC<AudioButtonProps> = ({audioState, onPress}) => {
+  const dispatch = useAppDispatch();
+  const actionButton = useAppSelector(audioButtonSelector);
+
   return (
     <Button
     color={audioState ? "pink" : "lime"}

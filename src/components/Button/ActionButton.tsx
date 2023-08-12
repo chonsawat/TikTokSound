@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Button } from "@mantine/core";
 
 export type ActionButtonProps = {
-  onAddHandler: () => {}
+  onAddHandler: () => void
 }
 
 export default function ActionButton ({ onAddHandler } : ActionButtonProps) {

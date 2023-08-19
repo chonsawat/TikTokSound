@@ -1,7 +1,7 @@
 import { combineReducers } from "@reduxjs/toolkit"
 
-import { eventRecordsReducer } from "./event-record/event-record.reducer";
-import { audioReducer } from "./audio/audio.reducer";
+import { eventRecordsReducer } from "./event-record/event-record.slice";
+import { audioReducer } from "./audio/audio.slice";
 
 export const rootReducer = combineReducers({
   eventRecords: eventRecordsReducer,

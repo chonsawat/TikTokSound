@@ -2,16 +2,14 @@
 	ใช้ในการสร้าง Reducer Actions และ Initial State
 */
 import { createSlice } from "@reduxjs/toolkit";
+import { EventRecordType, EventType } from "./event-record.type";
 
-export type EventRecordType = {
-  id: string,
-  enable: boolean,
-  volume: number,
-  sound: string,
-}
-export type EventRecordsType = EventRecordType[]
+type InitialStateType = {
+  eventRecords: EventRecordType[];
+  eventList: EventType[];
+};
 
-export const EVENT_RECORD_INITIAL_STATE = {
+export const EVENT_RECORD_INITIAL_STATE: InitialStateType = {
   eventRecords: [
     {
       id: "1",
@@ -61,6 +59,15 @@ export const EVENT_RECORD_INITIAL_STATE = {
       sound:
         "C:\\Users\\Acer\\Documents\\TikTokSoundTemp\\assets\\sound\\monkey-laugh-102.wav",
     },
+  ],
+  eventList: [
+    { label: "Following", value: "following" },
+    { label: "Subcribe", value: "subcribe" },
+    { label: "Any Gift", value: "anygift" },
+    { label: "TikTok", value: "tiktok" },
+    { label: "Rose", value: "rose" },
+    { label: "Heart", value: "heart" },
+    { label: "Heart 2", value: "heart" },
   ],
 };
 

@@ -1,5 +1,10 @@
-import { setAudioButton, setAudioRefs } from "./audio.reducer";
+import { setAudioButton, setAudioRefs } from "./audio.slice";
 import { audioButtonSelector, audioRefSelector } from "./audio.selector";
 
-export { setAudioButton, setAudioRefs };
+// Selector
 export { audioButtonSelector, audioRefSelector };
+
+// Setter
+export { setAudioButton, setAudioRefs };
+
+// Deleter

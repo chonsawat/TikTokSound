@@ -5,9 +5,10 @@ import { audioButtonSelector } from "../../stores/audio";
 
 import PlayIcon from "../../assets/icon/play.svg";
 import MuteIcon from "../../assets/icon/volume-x.svg";
+import { useSelector } from "react-redux";
 
 type AudioButtonProps = {
-    audioState: boolean,
+    audioState?: boolean,
     onPress: () => void
 }
 

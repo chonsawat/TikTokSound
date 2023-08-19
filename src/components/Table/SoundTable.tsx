@@ -24,27 +24,38 @@ import {
 import {
   createDefualtValue,
   createNewAudioPlayerRow,
-  eventList,
-  getAudioRefByRefId,
 } from "../../utils/SoundTable";
 
 import ActionButton from "../Button/ActionButton";
 import AudioButton from "../Button/AudioButton";
 import { useAppDispatch, useAppSelector } from "../../stores/hook";
-import { audioRefSelector, setAudioRefs } from "../../stores/audio";
-import { EventRecordType } from "../../stores/event-record/event-record.reducer";
+import {
+  audioRefSelector,
+  setAudioRefs,
+  setAudioButton,
+} from "../../stores/audio";
+import { AudioRefsType } from "../../stores/audio/audio.type";
+import { EventRecordType } from "../../stores/event-record/event-record.type";
+import { eventListSelector } from "../../stores/event-record/event-record.selector";
+import { getAudioRefByRefId } from "../../stores/audio/audio.selector";
+import { useDispatch, useSelector } from "react-redux";
 
-type AudioRefType = {refId: string, isPlaying: boolean}
+type AudioRefType = { refId: string; isPlaying: boolean };
 
 const SoundTable = () => {
   const dispatch = useAppDispatch();
+  // const dispatch = useDispatch();
+
   const [file, setFile] = useState(null);
-  // const [audioRefs, dispatch(setAudioRefs] =) useState([]);
-  const [audioSoundPaths, setAudioSoundPaths] = useState({});
+  // const [audioRefs, setAudioRefs] = useState<AudioRefsType[]>([]);
+  const [audioSoundPaths, setAudioSoundPaths] = useState<{
+    [key: string]: string;
+  }>({});
   const [path, setPath] = useState("./");
 
   const eventRecords = useAppSelector(eventRecordsSelector);
   const audioRefs = useAppSelector(audioRefSelector);
+  const eventList = useAppSelector(eventListSelector);
 
   // TODO: Delete log when production
   // console.log("rendering sound-table");
@@ -89,21 +100,30 @@ const SoundTable = () => {
   };
 
   const onDeleteHanler = (id: string, refId: string) => {
-    const newAudioRefs = audioRefs.filter((item: any) => item.refId != refId);
+    const newAudioRefs: AudioRefsType[] = audioRefs!.filter(
+      (item: any) => item.refId != refId
+    );
     dispatch(deleteEventRecordsById(id));
     dispatch(setAudioRefs(newAudioRefs));
   };
 
   const onPressPlayHandler = (refId: string) => {
     /* Handle while play and pause button was pressed */
-    const element = getAudioRefByRefId(audioRefs, refId);
-    const audioEvent = element.current.audioEl.current;
-    const state = element.isPlaying;
+    const element = useSelector(getAudioRefByRefId(refId));
+    console.log(
+      "element.current instanceof ReactAudioPlayer:",
+      element!.current instanceof ReactAudioPlayer
+    );
+    if (element!.current instanceof ReactAudioPlayer) {
+    }
+    // const audioEvent = element?.current!.audioEl.current;
+    const audioEvent = element!.current.audioEl.current;
+    const state = element!.isPlaying;
 
     if (!state) {
       // Play a audio and loop until pause button was clicked.
-      audioEvent.play();
-      audioEvent.loop = true;
+      audioEvent!.play();
+      audioEvent!.loop = true;
 
       // update newAudioRefs state
       const newAudioRefs = [...audioRefs];
@@ -114,8 +134,8 @@ const SoundTable = () => {
       dispatch(setAudioRefs(newAudioRefs));
     } else {
       // Stop sound playback
-      audioEvent.pause();
-      audioEvent.load();
+      audioEvent!.pause();
+      audioEvent!.load();
 
       // update newAudioRefs state
       const newAudioRefs = [...audioRefs];
@@ -140,7 +160,7 @@ const SoundTable = () => {
     </tr>
   );
 
-  const rows = eventRecords?.map((element: EventRecordType , iter) => {
+  const rows = eventRecords!.map((element: EventRecordType, iter) => {
     let refId = element.id;
     let isEnable = element.enable;
 
@@ -148,16 +168,19 @@ const SoundTable = () => {
     let audioVolume;
     let audioSoundPath;
 
+    const audioPlayer = useAppSelector(getAudioRefByRefId(refId))
+
     console.log("element: " + Object.keys(element));
 
     try {
-      audioState = getAudioRefByRefId(audioRefs, refId).isPlaying;
-      audioVolume = getAudioRefByRefId(audioRefs, refId).volume;
+      audioState = useAppSelector(getAudioRefByRefId(refId))?.isPlaying;
+      audioVolume = useAppSelector(getAudioRefByRefId(refId))?.volume;
       audioSoundPath = audioSoundPaths[refId];
-    } catch (e) {
+    } catch (e: any) {
       switch (e.message) {
         case "Cannot read properties of undefined (reading 'isPlaying')":
           audioState = false;
+          break;
         case "Cannot read properties of undefined (reading 'volume')":
           audioVolume = 0.1;
           break;
@@ -170,9 +193,12 @@ const SoundTable = () => {
       <tr key={refId}>
         <td>
           <div id="AuidoButton">
-           <AudioButton onPress={() => onPressPlayHandler(refId)}/>
+            <AudioButton
+              audioState={audioState}
+              onPress={() => onPressPlayHandler(refId)}
+            />
             <ReactAudioPlayer
-              ref={getAudioRefByRefId(audioRefs, refId)}
+              ref={audioPlayer}
               src={audioSoundPath}
               volume={audioVolume}
             ></ReactAudioPlayer>
@@ -181,7 +207,7 @@ const SoundTable = () => {
         <td>
           <Slider
             maw={"auto"}
-            value={(audioVolume * 100).toFixed(2)}
+            value={parseFloat((audioVolume! * 100).toFixed(2))}
             onChange={(event) => {
               const newAudioRefs = [...audioRefs];
               newAudioRefs.map((item) => {
@@ -199,7 +225,7 @@ const SoundTable = () => {
         <td>
           <Checkbox
             defaultChecked={isEnable}
-            value={isEnable}
+            value={isEnable ? "true" : "false"}
             onChange={(event) => {
               isEnable = !event.currentTarget.checked;
             }}

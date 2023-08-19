@@ -28,8 +28,7 @@
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",
     "tauri-plugin-store-api": "https://github.com/tauri-apps/tauri-plugin-store#v1",
-    "typescript": "^5.1.6",
-    "zustand": "^4.4.1"
+    "typescript": "^5.1.6"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^1.4.0",

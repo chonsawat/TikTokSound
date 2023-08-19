@@ -1,6 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { AudioButtonType, AudioRefsType } from "./audio.type";
 
-const initialState = {
+type InitialStateType = {
+  audioButton: AudioButtonType,
+  audioRefs: AudioRefsType[],
+}
+
+const initialState: InitialStateType = {
   audioButton: {
     content: "Action",
     variant: "filled",
